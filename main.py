@@ -111,36 +111,24 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 regr = LinearRegression()
 regr.fit(X_train, y_train)
 print("R-squared score: ", regr.score(X_test, y_test))
-# Predict on the test set
 y_pred = regr.predict(temporada_actual[['Position','Points','Wins']])
 temporada_actual['Pred_Position'] = y_pred[:,0]
 temporada_actual['Pred_Points'] = y_pred[:,1]
 temporada_actual['Pred_Wins'] = y_pred[:,2]
-# Create the figure with three subplots
-# Create the figure with three subplots
-# Create the figure with four subplots
 fig, ax = plt.subplots(1, 4, figsize=(19, 5))
 fig.suptitle(f'Current Points, Position, and Wins vs Projected Points, Position, and Wins')
 hue = 'Driver'
 style = 'Constructor'
-# Plot the scatterplots
 scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100, ax=ax[0])
 scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100, ax=ax[1])
 scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100, ax=ax[2])
 
-# Get the handles and labels of the first scatterplot
 handles, labels = scatter1.get_legend_handles_labels()
-
-# Remove the legends from the other scatterplots
 scatter1.legend_.remove()
 scatter2.legend_.remove()
 scatter3.legend_.remove()
-
-# Create a single legend in the fourth axis
-ax_legend = ax[3].axis('off')  # Turn off the axis to make space for the legend
+ax_legend = ax[3].axis('off')
 legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)', loc='right', ncol=4)
-
-# Customize the plots
 ax[0].set_xlabel('Points')
 ax[0].set_ylabel('Predicted Points')
 ax[0].set_title('Points vs. Predicted Points')
