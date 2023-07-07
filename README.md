@@ -1,1 +1,1 @@
-Esta serie tiene como proposito hacer algunos analisis dobre el comportamiento en la F1, el primero muestra la comparacion de la semana actual con el fin de tempoerada, se puede observar que el ganador y segundo lugar ya estan practicamente definidos# F1
+W are looking to get some analysis on different aspects regarding F1
