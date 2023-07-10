@@ -1,8 +1,6 @@
 import requests
 from json import loads, dumps
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -116,47 +114,6 @@ y_pred = regr.predict(temporada_actual[['Position','Points','Wins']])
 temporada_actual['Pred_Position'] = y_pred[:,0]
 temporada_actual['Pred_Points'] = y_pred[:,1]
 temporada_actual['Pred_Wins'] = y_pred[:,2]
-# Create the figure with three subplots
-# Create the figure with three subplots
-# Create the figure with four subplots
-fig, ax = plt.subplots(1, 4, figsize=(19, 5))
-fig.suptitle(f'Current Points, Position, and Wins vs Projected Points, Position, and Wins')
-hue = 'Driver'
-style = 'Constructor'
-# Plot the scatterplots
-scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100, ax=ax[0])
-scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100, ax=ax[1])
-scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100, ax=ax[2])
-
-# Get the handles and labels of the first scatterplot
-handles, labels = scatter1.get_legend_handles_labels()
-
-# Remove the legends from the other scatterplots
-scatter1.legend_.remove()
-scatter2.legend_.remove()
-scatter3.legend_.remove()
-
-# Create a single legend in the fourth axis
-ax_legend = ax[3].axis('off')  # Turn off the axis to make space for the legend
-legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)', loc='right', ncol=4)
-
-# Customize the plots
-ax[0].set_xlabel('Points')
-ax[0].set_ylabel('Predicted Points')
-ax[0].set_title('Points vs. Predicted Points')
-
-ax[1].set_xlabel('Position')
-ax[1].set_ylabel('Predicted Position')
-ax[1].set_title('Position vs. Predicted Position')
-
-ax[2].set_xlabel('Wins')
-ax[2].set_ylabel('Predicted Wins')
-ax[2].set_title('Wins vs. Predicted Wins')
-
-plt.tight_layout()
-
-plt.show()
-
 
 
 
