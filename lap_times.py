@@ -1,8 +1,6 @@
 import requests
 from json import loads, dumps
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 from datetime import datetime
 url = 'http://ergast.com/api/f1/current/last/fastest/1/results.json'
 response = requests.get(url=url)
