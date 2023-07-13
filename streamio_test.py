@@ -158,18 +158,21 @@ def main():
     temporada_actual['Pred_Wins'] = y_pred[:, 2]
     hue = 'Driver'
     style = 'Constructor'
-    scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100)
-    scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100)
-    scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100)
 
     col1, col2 = st.columns(2)
     with col1:
         st.subheader('Current Points vs Projected Points')
-        st.pyplot(scatter1)
+        fig, ax = plt.subplots()
+        scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100)
+        st.pyplot(fig)
+        fig, ax = plt.subplots()
         st.subheader('Current Position vs Projected Position')
-        st.pyplot(scatter2)
+        scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100)
+        st.pyplot(fig)
         st.subheader('Current Wins vs Projected Wins')
-        st.pyplot(scatter3)
+        fig, ax = plt.subplots()
+        scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100)
+        st.pyplot(fig)
         st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
         driver_wins = standings.groupby('Driver')['Wins'].sum().sort_values(ascending=False)
         st.subheader(f'Driver Wins in the last {num_years} years')
