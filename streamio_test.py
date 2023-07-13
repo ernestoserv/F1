@@ -164,7 +164,6 @@ def main():
 
     col1, col2 = st.columns(2)
     with col1:
-        plt.tight_layout()
         st.subheader('Current Points vs Projected Points')
         st.pyplot(scatter1)
         st.subheader('Current Position vs Projected Position')
