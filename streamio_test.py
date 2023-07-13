@@ -159,8 +159,8 @@ def main():
     hue = 'Driver'
     style = 'Constructor'
 
-    col1, col2,col3 = st.columns([0.4,0.4,0.2],gap='large')
-    with col1:
+    tab1, tab2 = st.tabs(['Predictions','Fastest Times'])
+    with tab1:
         st.subheader('Current Points vs Projected Points')
         fig, ax = plt.subplots(2,1)
         scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100,ax=ax[0])
@@ -192,34 +192,36 @@ def main():
         st.bar_chart(driver_wins)
     df = pd.DataFrame()
     circuit = circuit_names()
-    with col2:
-        circuits = st.sidebar.selectbox('Select circuit', circuit)
-        df = create_dataframe(df, circuits)
-        st.title('Fastest laps at {}'.format(circuits))
-        st.table(df)
-        current_year_avg_speed = df['Avg_Speed'].iloc[-1]
-        previous_year_avg_speed = df['Avg_Speed'].iloc[-2]
-        avg_speed_change = current_year_avg_speed - previous_year_avg_speed
+    col1, col2 = st.columns(2)
+    circuits = st.sidebar.selectbox('Select circuit', circuit)
+    df = create_dataframe(df, circuits)
+    with tab2:
+        with col1:
+            st.title('Fastest laps at {}'.format(circuits))
+            st.table(df)
+            current_year_avg_speed = df['Avg_Speed'].iloc[-1]
+            previous_year_avg_speed = df['Avg_Speed'].iloc[-2]
+            avg_speed_change = current_year_avg_speed - previous_year_avg_speed
 
-        # Add a new chart that displays the fastest laps
-        df['Time_in_seconds'] = df['Time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
-        fig, ax = plt.subplots()
-        sns.lineplot(data=df, x='Season', y='Time_in_seconds')
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Fastest Lap Time (sec)')
-        plt.xticks(rotation=45, ha='right')
-        st.pyplot(fig)
-        difference_in_seconds = df['Time_in_seconds'].iloc[-1] - df['Time_in_seconds'].iloc[-2]
-        fig, ax = plt.subplots()
-        sns.lineplot(data=df, x='Season', y='Avg_Speed')
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Average Speed (mph)')
-        plt.xticks(rotation=45, ha='right')
-        st.pyplot(fig)
-    with col3:
-        st.metric('Fastest Lap', df['Time'].iloc[-1],
+            # Add a new chart that displays the fastest laps
+            df['Time_in_seconds'] = df['Time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
+            fig, ax = plt.subplots()
+            sns.lineplot(data=df, x='Season', y='Time_in_seconds')
+            ax.set_xlabel('Year')
+            ax.set_ylabel('Fastest Lap Time (sec)')
+            plt.xticks(rotation=45, ha='right')
+            st.pyplot(fig)
+            difference_in_seconds = df['Time_in_seconds'].iloc[-1] - df['Time_in_seconds'].iloc[-2]
+            fig, ax = plt.subplots()
+            sns.lineplot(data=df, x='Season', y='Avg_Speed')
+            ax.set_xlabel('Year')
+            ax.set_ylabel('Average Speed (mph)')
+            plt.xticks(rotation=45, ha='right')
+            st.pyplot(fig)
+        with col2:
+            st.metric('Fastest Lap', df['Time'].iloc[-1],
                   delta=f"{difference_in_seconds:.2f} seconds")
-        st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
+            st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
 
 
 if __name__ == '__main__':
