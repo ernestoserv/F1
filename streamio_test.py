@@ -164,6 +164,8 @@ def main():
         st.subheader('Current Points vs Projected Points')
         fig, ax = plt.subplots()
         scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100)
+        handles, labels = scatter1.get_legend_handles_labels()
+        legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)', loc='bottom', ncol=4)
         st.pyplot(fig)
         fig, ax = plt.subplots()
         st.subheader('Current Position vs Projected Position')
