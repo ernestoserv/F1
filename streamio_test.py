@@ -193,8 +193,7 @@ def main():
     df = pd.DataFrame()
     circuit = circuit_names()
     with col2:
-
-        circuits = st.selectbox('Select circuit', circuit)
+        circuits = st.sidebar.selectbox('Select circuit', circuit)
         df = create_dataframe(df, circuits)
         st.title('Fastest laps at {}'.format(circuits))
         st.table(df)
