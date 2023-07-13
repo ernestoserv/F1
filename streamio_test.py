@@ -162,8 +162,9 @@ def main():
     col1, col2 = st.columns(2)
     with col1:
         st.subheader('Current Points vs Projected Points')
-        fig, ax = plt.subplots()
-        scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100)
+        fig, ax = plt.subplots(2,1)
+        scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100,ax=ax[0])
+        ax_legend = ax[1].axis('off')
         handles, labels = scatter1.get_legend_handles_labels()
         legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
                             loc='lower center', ncol=4)
