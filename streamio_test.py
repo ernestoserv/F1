@@ -68,6 +68,12 @@ def initialize():
 
         df_data.append(row)
     df = pd.DataFrame(df_data)
+    df['Position'] = pd.to_numeric(df['Position'])
+    df["Points"] = pd.to_numeric(df['Points'])
+    df["Wins"] = pd.to_numeric(df['Wins'])
+    df['Driver'] = df['Driver'].astype(str)
+    df['Constructor'] = df['Constructor'].astype(str)
+    df['Season'] = pd.to_numeric(df['Season'])
     return df,round
 
 def populate_dataframe(calc:int,stage:int,df,year=2023):
@@ -94,6 +100,12 @@ def populate_dataframe(calc:int,stage:int,df,year=2023):
             }
             new_row_df = pd.DataFrame(new_row, index=[0])
             df = pd.concat([df, new_row_df], ignore_index=True)
+    df['Position'] = pd.to_numeric(df['Position'])
+    df["Points"] = pd.to_numeric(df['Points'])
+    df["Wins"] = pd.to_numeric(df['Wins'])
+    df['Driver'] = df['Driver'].astype(str)
+    df['Constructor'] = df['Constructor'].astype(str)
+    df['Season'] = pd.to_numeric(df['Season'])
     return df
 
 
@@ -118,75 +130,50 @@ def end_of_season(calc:int,year=2023):
             }
             new_row_df = pd.DataFrame(new_row, index=[0])
             df = pd.concat([df, new_row_df], ignore_index=True)
+    df['Position_EOS'] = pd.to_numeric(df['Position_EOS'])
+    df["Points_EOS"] = pd.to_numeric(df['Points_EOS'])
+    df["Wins_EOS"] = pd.to_numeric(df['Wins_EOS'])
+    df['Driver'] = df['Driver'].astype(str)
     return df
 
 
 
 def main():
+    st.title('F1 Analytics')
+    st.sidebar.title('Settings')
+    num_years = st.sidebar.slider('Select number of years', min_value=1, max_value=20, value=10)
     temporada_actual, round = initialize()
-    temporada_actual['Position'] = pd.to_numeric(temporada_actual['Position'])
-    temporada_actual["Points"] = pd.to_numeric(temporada_actual['Points'])
-    temporada_actual["Wins"] = pd.to_numeric(temporada_actual['Wins'])
-    temporada_actual['Driver'] = temporada_actual['Driver'].astype(str)
-    temporada_actual['Constructor'] = temporada_actual['Constructor'].astype(str)
-    temporada_actual['Season'] = pd.to_numeric(temporada_actual['Season'])
-    num_years = st.slider('Select number of years', min_value=1, max_value=20, value=10)
     standings = populate_dataframe(num_years, stage=round, df=temporada_actual)
-    standings['Position'] = pd.to_numeric(standings['Position'])
-    standings["Points"] = pd.to_numeric(standings['Points'])
-    standings["Wins"] = pd.to_numeric(standings['Wins'])
-    standings['Driver'] = standings['Driver'].astype(str)
-    standings['Constructor'] = standings['Constructor'].astype(str)
-    standings['Season'] = pd.to_numeric(standings['Season'])
     top_ten_per_season = standings[standings['Position'] <= 10]
     eos = end_of_season(num_years)
-    eos['Position_EOS'] = pd.to_numeric(eos['Position_EOS'])
-    eos["Points_EOS"] = pd.to_numeric(eos['Points_EOS'])
-    eos["Wins_EOS"] = pd.to_numeric(eos['Wins_EOS'])
-    eos['Driver'] = eos['Driver'].astype(str)
     final_test = standings[standings['Season'] != 2023].merge(eos, how='left', on='Driver_Season')
     X = final_test[['Position', 'Points', "Wins"]]
     y = final_test[['Position_EOS', 'Points_EOS', 'Wins_EOS']]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
-    print("R-squared score: ", regr.score(X_test, y_test))
     y_pred = regr.predict(temporada_actual[['Position', 'Points', 'Wins']])
     temporada_actual['Pred_Position'] = y_pred[:, 0]
     temporada_actual['Pred_Points'] = y_pred[:, 1]
     temporada_actual['Pred_Wins'] = y_pred[:, 2]
-    fig, ax = plt.subplots(1, 4,figsize=(60,15))
-    fig.suptitle(f'Current Points, Position, and Wins vs Projected Points, Position, and Wins')
     hue = 'Driver'
     style = 'Constructor'
-    scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100, ax=ax[0])
-    scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100, ax=ax[1])
-    scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100, ax=ax[2])
-    handles, labels = scatter1.get_legend_handles_labels()
-    scatter1.legend_.remove()
-    scatter2.legend_.remove()
-    scatter3.legend_.remove()
-    ax_legend = ax[3].axis('off')
-    legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)', loc='right', ncol=4)
-    ax[0].set_xlabel('Points')
-    ax[0].set_ylabel('Predicted Points')
-    ax[0].set_title('Points vs. Predicted Points')
-
-    ax[1].set_xlabel('Position')
-    ax[1].set_ylabel('Predicted Position')
-    ax[1].set_title('Position vs. Predicted Position')
-
-    ax[2].set_xlabel('Wins')
-    ax[2].set_ylabel('Predicted Wins')
-    ax[2].set_title('Wins vs. Predicted Wins')
-    st.title('F1 Analytics')
+    scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100)
+    scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100)
+    scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100)
 
     col1, col2 = st.columns(2)
     with col1:
         plt.tight_layout()
-        st.subheader('Current Points, Position, and Wins vs Projected Points, Position, and Wins')
-        st.pyplot(fig)
+        st.subheader('Current Points vs Projected Points')
+        st.pyplot(scatter1)
+        st.subheader('Current Position vs Projected Position')
+        st.pyplot(scatter2)
+        st.subheader('Current Wins vs Projected Wins')
+        st.pyplot(scatter3)
+        st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
         driver_wins = standings.groupby('Driver')['Wins'].sum().sort_values(ascending=False)
+        st.subheader(f'Driver Wins in the last {num_years} years')
         st.bar_chart(driver_wins)
     df = pd.DataFrame()
     circuit = circuit_names()
