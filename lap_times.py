@@ -38,6 +38,6 @@ def create_dataframe(df,circuit):
     df_1 = pd.DataFrame(cols)
     df = pd.concat([df, df_1], ignore_index=True)
     df['Time'] = df['Time'].apply(lambda x: datetime.strptime(x, "%M:%S.%f").strftime("%M:%S.%f")[:-3])
-    df['Avg_Speed'] = pd.to_numeric(df['Avg_Speed'])
+    df['Avg_Speed'] = pd.to_numeric(df['Avg_Speed'],figsize())
     return df.sort_values(['Season'])
 print(create_dataframe(df_1, race_to_analyze))
