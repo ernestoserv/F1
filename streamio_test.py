@@ -190,12 +190,13 @@ def main():
         driver_wins = standings.groupby('Driver')['Wins'].sum().sort_values(ascending=False)
         st.subheader(f'Driver Wins in the last {num_years} years')
         st.bar_chart(driver_wins)
-    df = pd.DataFrame()
-    circuit = circuit_names()
-    col1, col2 = st.columns(2)
-    circuits = st.sidebar.selectbox('Select circuit', circuit)
-    df = create_dataframe(df, circuits)
+
     with tab2:
+        df = pd.DataFrame()
+        circuit = circuit_names()
+        col1, col2 = st.columns(2)
+        circuits = st.sidebar.selectbox('Select circuit', circuit)
+        df = create_dataframe(df, circuits)
         with col1:
             st.title('Fastest laps at {}'.format(circuits))
             st.table(df)
