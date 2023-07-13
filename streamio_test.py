@@ -159,7 +159,7 @@ def main():
     hue = 'Driver'
     style = 'Constructor'
 
-    col1, col2,col3 = st.columns(3)
+    col1, col2,col3 = st.columns(3,gap='medium')
     with col1:
         st.subheader('Current Points vs Projected Points')
         fig, ax = plt.subplots(2,1)
