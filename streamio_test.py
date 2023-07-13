@@ -181,7 +181,7 @@ def main():
         scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100)
         legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
                             loc='lower center', ncol=4)
-        scatter2.legend_.remove()
+        scatter3.legend_.remove()
         st.pyplot(fig)
         st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
         driver_wins = standings.groupby('Driver')['Wins'].sum().sort_values(ascending=False)
