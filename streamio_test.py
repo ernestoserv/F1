@@ -162,10 +162,8 @@ def main():
 
     with tab1:
         st.subheader('Current Points vs Projected Points')
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=temporada_actual['points'], y=temporada_actual['pred_points'], mode='markers'))
-        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='points',
-                          yaxis_title='pred_points')
+        fig = px.scatter(temporada_actual, x='points', y='pred_points', labels={'x': 'Points', 'y': 'Predicted Points'},
+                          color="driver", symbol="constructor")
         st.plotly_chart(fig)
 
         st.subheader('Current Position vs Projected Position')
@@ -179,7 +177,7 @@ def main():
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers',
                                  marker=dict(
-                                     color=temporada_actual['driver'],
+                                     color='darkmagenta',
                                      symbol=temporada_actual['constructor']
                                  )
                                  ))
