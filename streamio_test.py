@@ -130,10 +130,10 @@ def end_of_season(calc:int,year=2023):
             }
             new_row_df = pd.DataFrame(new_row, index=[0])
             df = pd.concat([df, new_row_df], ignore_index=True)
-    df['position_EOS'] = pd.to_numeric(df['Position_EOS'])
-    df["points_EOS"] = pd.to_numeric(df['Points_EOS'])
-    df["wins_EOS"] = pd.to_numeric(df['Wins_EOS'])
-    df['driver'] = df['Driver'].astype(str)
+    df['position_EOS'] = pd.to_numeric(df['position_EOS'])
+    df["points_EOS"] = pd.to_numeric(df['points_EOS'])
+    df["wins_EOS"] = pd.to_numeric(df['wins_EOS'])
+    df['driver'] = df['driver'].astype(str)
     return df
 
 
