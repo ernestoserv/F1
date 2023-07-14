@@ -167,20 +167,13 @@ def main():
         st.plotly_chart(fig)
 
         st.subheader('Current Position vs Projected Position')
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=temporada_actual['position'], y=temporada_actual['pred_position'], mode='markers'))
-        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='position',
-                          yaxis_title='pred_position')
+        fig = px.scatter(temporada_actual, x='position', y='pred_position', labels={'x': 'Position', 'y': 'Predicted Position'},
+                         color="driver", symbol="constructor")
         st.plotly_chart(fig)
 
         st.subheader('Current Wins vs Projected Wins')
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers',
-                                 marker=dict(
-                                     color='darkmagenta',symbol='diamond'
-                                 )
-                                 ))
-        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='wins', yaxis_title='pred_wins')
+        fig = px.scatter(temporada_actual, x='wins', y='pred_wins', labels={'x': 'Wins', 'y': 'Predicted Wins'},
+                         color="driver", symbol="constructor")
         st.plotly_chart(fig)
 
         st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
