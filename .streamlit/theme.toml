@@ -1,6 +1,5 @@
 [theme]
-primaryColor = "CE6764"
-backgroundColor = "#fff"
-secondaryBackgroundColor = "#202020"
-textColor = "#171717"
-font = "Titillium Web"
+primary_color = '#FFFFFF'  # white
+secondary_color = '#FF0000'  # red
+font_color = '#000000'  # black
+font_type = 'Titillium Web'
