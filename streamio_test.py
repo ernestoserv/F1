@@ -152,7 +152,7 @@ def main():
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(temporada_actual[['position', 'points', 'wins']])
-    temporada_actual.assign(pred_position = y_pred[:,0], pred_points=y_pred[:,1],pred_wins=y_pred[:,2])
+    temporada_actual = temporada_actual.assign(pred_position = y_pred[:,0], pred_points=y_pred[:,1],pred_wins=y_pred[:,2])
     hue = 'driver'
     style = 'constructor'
     tab1, tab2 = st.tabs(['Predictions','Fastest Times'])
