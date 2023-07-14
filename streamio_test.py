@@ -177,7 +177,12 @@ def main():
 
         st.subheader('Current Wins vs Projected Wins')
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers'))
+        fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers',
+                                 marker=dict(
+                                     color=temporada_actual['driver'],
+                                     symbol=temporada_actual['constructor']
+                                 )
+                                 ))
         fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='wins', yaxis_title='pred_wins')
         st.plotly_chart(fig)
 
