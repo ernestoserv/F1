@@ -3,6 +3,8 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.graph_objs as go
+import plotly.express as px
 from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -152,36 +154,33 @@ def main():
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(temporada_actual[['position', 'points', 'wins']])
-    temporada_actual = temporada_actual.assign(pred_position = y_pred[:,0], pred_points=y_pred[:,1],pred_wins=y_pred[:,2])
+    temporada_actual = temporada_actual.assign(pred_position=y_pred[:, 0], pred_points=y_pred[:, 1],
+                                               pred_wins=y_pred[:, 2])
     hue = 'driver'
     style = 'constructor'
-    tab1, tab2 = st.tabs(['Predictions','Fastest Times'])
+    tab1, tab2 = st.tabs(['Predictions', 'Fastest Times'])
+
     with tab1:
         st.subheader('Current Points vs Projected Points')
-        fig, ax = plt.subplots(2,1)
-        scatter1 = sns.scatterplot(temporada_actual, x='points', y='pred_points', hue=hue, style=style, s=100,ax=ax[0])
-        ax_legend = ax[1].axis('off')
-        handles, labels = scatter1.get_legend_handles_labels()
-        legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
-                            loc='lower center', ncol=4)
-        scatter1.legend_.remove()
-        st.pyplot(fig,clear_figure=True)
-        fig, ax = plt.subplots(2,1)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=temporada_actual['points'], y=temporada_actual['pred_points'], mode='markers'))
+        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='points',
+                          yaxis_title='pred_points')
+        st.plotly_chart(fig)
+
         st.subheader('Current Position vs Projected Position')
-        scatter2 = sns.scatterplot(temporada_actual, x='position', y='pred_position', hue=hue, style=style, s=100,ax=ax[0])
-        ax_legend = ax[1].axis('off')
-        legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
-                            loc='lower center', ncol=4)
-        scatter2.legend_.remove()
-        st.pyplot(fig)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=temporada_actual['position'], y=temporada_actual['pred_position'], mode='markers'))
+        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='position',
+                          yaxis_title='pred_position')
+        st.plotly_chart(fig)
+
         st.subheader('Current Wins vs Projected Wins')
-        fig, ax = plt.subplots(2,1)
-        scatter3 = sns.scatterplot(temporada_actual, x='wins', y='pred_wins', hue=hue, style=style, s=100,ax=ax[0])
-        ax_legend = ax[1].axis('off')
-        legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
-                            loc='lower center', ncol=4)
-        scatter3.legend_.remove()
-        st.pyplot(fig)
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers'))
+        fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='wins', yaxis_title='pred_wins')
+        st.plotly_chart(fig)
+
         st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
         driver_wins = standings.groupby('driver')['wins'].sum().sort_values(ascending=False)
         st.subheader(f'Driver Wins in the last {num_years} years')
@@ -199,25 +198,16 @@ def main():
             current_year_avg_speed = df['avg_speed'].iloc[-1]
             previous_year_avg_speed = df['avg_speed'].iloc[-2]
             avg_speed_change = current_year_avg_speed - previous_year_avg_speed
-
-            # Add a new chart that displays the fastest laps
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
-            fig, ax = plt.subplots()
-            sns.lineplot(data=df, x='season', y='time_in_seconds')
-            ax.set_xlabel('Year')
-            ax.set_ylabel('Fastest Lap Time (sec)')
-            plt.xticks(rotation=45, ha='right')
-            st.pyplot(fig)
+            fig = px.line(df, x='season', y='time_in_seconds', labels={'x': 'Year', 'y': 'Fastest Lap Time (sec)'})
+            st.plotly_chart(fig)
             difference_in_seconds = df['time_in_seconds'].iloc[-1] - df['time_in_seconds'].iloc[-2]
-            fig, ax = plt.subplots()
-            sns.lineplot(data=df, x='season', y='avg_speed')
-            ax.set_xlabel('Year')
-            ax.set_ylabel('Average Speed (mph)')
-            plt.xticks(rotation=45, ha='right')
-            st.pyplot(fig)
+            fig = px.line(df, x='season', y='avg_speed', labels={'x': 'Year', 'y': 'Average Speed (mph)'})
+            st.plotly_chart(fig)
+
         with col2:
             st.metric('Fastest Lap', df['time'].iloc[-1],
-                  delta=f"{difference_in_seconds:.2f} seconds")
+                      delta=f"{difference_in_seconds:.2f} seconds")
             st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
 
 
