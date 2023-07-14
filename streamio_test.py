@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 import streamlit as st
-import streamlit_pandas as sp
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objs as go
@@ -190,13 +189,9 @@ def main():
         df = fastest_laps(df, circuits)
         with col1:
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
-            create_data = {"constructor": "multiselect",
-                           'driver':'multiselect'}
 
-            all_widgets = sp.create_widgets(df, create_data)
-            res = sp.filter_df(df, all_widgets)
             st.title('Fastest laps at {}'.format(circuits))
-            st.write(res)
+            st.table(df)
             current_year_avg_speed = df['avg_speed'].iloc[-1]
             previous_year_avg_speed = df['avg_speed'].iloc[-2]
             avg_speed_change = current_year_avg_speed - previous_year_avg_speed
