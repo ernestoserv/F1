@@ -151,7 +151,7 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
-    y_pred = regr.predict(temporada_actual[['Position', 'Points', 'Wins']])
+    y_pred = regr.predict(temporada_actual[['position', 'points', 'wins']])
     temporada_actual.assign(pred_position = y_pred[:,0], pred_points=y_pred[:,1],pred_wins=y_pred[:,2])
     hue = 'driver'
     style = 'constructor'
