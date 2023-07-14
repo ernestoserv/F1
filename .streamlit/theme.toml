@@ -1,6 +1,2 @@
 [theme]
 base = "light"
-primary_color = '#FFFFFE'  # white
-secondary_color = '#FF0000'  # red
-font_color = '#000000'  # black
-font_type = 'Titillium Web'
