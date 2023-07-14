@@ -153,12 +153,9 @@ def main():
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(temporada_actual[['Position', 'Points', 'Wins']])
-    temporada_actual['Pred_Position'] = y_pred[:, 0]
-    temporada_actual['Pred_Points'] = y_pred[:, 1]
-    temporada_actual['Pred_Wins'] = y_pred[:, 2]
+    temporada_actual.assign(Pred_position = y_pred[:,0], Pred_Points=y_pred[:,1],Pred_Wins=y_pred[:,2])
     hue = 'Driver'
     style = 'Constructor'
-
     tab1, tab2 = st.tabs(['Predictions','Fastest Times'])
     with tab1:
         st.subheader('Current Points vs Projected Points')
