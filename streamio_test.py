@@ -177,8 +177,7 @@ def main():
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=temporada_actual['wins'], y=temporada_actual['pred_wins'], mode='markers',
                                  marker=dict(
-                                     color='darkmagenta',
-                                     symbol=temporada_actual['constructor']
+                                     color='darkmagenta',symbol='diamond'
                                  )
                                  ))
         fig.update_layout(title='Drivers(Color) and Constructors(Shape)', xaxis_title='wins', yaxis_title='pred_wins')
