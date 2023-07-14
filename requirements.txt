@@ -95,3 +95,4 @@ validators==0.20.0
 visions==0.7.4
 wcwidth==0.2.6
 zipp==3.16.0
+plotly==5.15.0
