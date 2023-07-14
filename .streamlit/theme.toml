@@ -1,6 +1,6 @@
 [theme]
-primaryColor = "#DC0000"
-backgroundColor = "#000000"
+primaryColor = "CE6764"
+backgroundColor = "#fff"
 secondaryBackgroundColor = "#202020"
-textColor = "#FFFFFF"
-font = "sans serif"
+textColor = "#171717"
+font = "Titillium Web"
