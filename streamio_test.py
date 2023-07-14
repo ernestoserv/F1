@@ -19,13 +19,13 @@ def fastest_laps(df, circuit):
                 "driver": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Driver']['driverId'],
                 "contructor": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Constructor']['constructorId'],
                 "time": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['Time']['time'],
-                "avg_Speed": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['AverageSpeed']['speed']
+                "avg_speed": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['AverageSpeed']['speed']
             }
             cols.append(latest_race)
     df_1 = pd.DataFrame(cols)
     df = pd.concat([df, df_1], ignore_index=True)
     df['time'] = df['time'].apply(lambda x: datetime.strptime(x, "%M:%S.%f").strftime("%M:%S.%f")[:-3])
-    df['avg_Speed'] = pd.to_numeric(df['avg_Speed'])
+    df['avg_speed'] = pd.to_numeric(df['avg_speed'])
     return df.sort_values(['season'])
 
 def circuit_names():
