@@ -7,7 +7,7 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 @st.cache_data
-def create_dataframe(df, circuit):
+def fastest_laps(df, circuit):
     cols = []
     for i in range(2008, 2024):
         url = f'http://ergast.com/api/f1/{i}/circuits/{circuit}/fastest/1/results.json'
@@ -15,18 +15,18 @@ def create_dataframe(df, circuit):
         temp = response.json()
         if temp["MRData"]["RaceTable"]['Races'] != []:
             latest_race = {
-                "Season": temp["MRData"]["RaceTable"]['season'],
-                "Driver": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Driver']['driverId'],
-                "Contructor": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Constructor']['constructorId'],
-                "Time": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['Time']['time'],
-                "Avg_Speed": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['AverageSpeed']['speed']
+                "season": temp["MRData"]["RaceTable"]['season'],
+                "driver": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Driver']['driverId'],
+                "contructor": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['Constructor']['constructorId'],
+                "time": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['Time']['time'],
+                "avg_Speed": temp["MRData"]["RaceTable"]["Races"][0]['Results'][0]['FastestLap']['AverageSpeed']['speed']
             }
             cols.append(latest_race)
     df_1 = pd.DataFrame(cols)
     df = pd.concat([df, df_1], ignore_index=True)
-    df['Time'] = df['Time'].apply(lambda x: datetime.strptime(x, "%M:%S.%f").strftime("%M:%S.%f")[:-3])
-    df['Avg_Speed'] = pd.to_numeric(df['Avg_Speed'])
-    return df.sort_values(['Season'])
+    df['time'] = df['time'].apply(lambda x: datetime.strptime(x, "%M:%S.%f").strftime("%M:%S.%f")[:-3])
+    df['avg_Speed'] = pd.to_numeric(df['avg_Speed'])
+    return df.sort_values(['season'])
 
 def circuit_names():
     url1 = 'http://ergast.com/api/f1/current/last/results.json'
@@ -55,25 +55,25 @@ def initialize():
         constructor_info = entry["Constructors"][0]
 
         row = {
-         "Position": entry["position"],
-         "Points": entry["points"],
-         "Wins": entry["wins"],
-         "Driver": driver_info["code"],
-          "Constructor": constructor_info["name"],
-          "Season": season,
-          "Week": round,
-          "Driver_Season": str(season) + driver_info['code']
+         "position": entry["position"],
+         "points": entry["points"],
+         "wins": entry["wins"],
+         "driver": driver_info["code"],
+          "constructor": constructor_info["name"],
+          "season": season,
+          "week": round,
+          "driver_Season": str(season) + driver_info['code']
 
              }
 
         df_data.append(row)
     df = pd.DataFrame(df_data)
-    df['Position'] = pd.to_numeric(df['Position'])
-    df["Points"] = pd.to_numeric(df['Points'])
-    df["Wins"] = pd.to_numeric(df['Wins'])
-    df['Driver'] = df['Driver'].astype(str)
-    df['Constructor'] = df['Constructor'].astype(str)
-    df['Season'] = pd.to_numeric(df['Season'])
+    df['position'] = pd.to_numeric(df['position'])
+    df["points"] = pd.to_numeric(df['points'])
+    df["wins"] = pd.to_numeric(df['wins'])
+    df['driver'] = df['driver'].astype(str)
+    df['constructor'] = df['constructor'].astype(str)
+    df['season'] = pd.to_numeric(df['season'])
     return df,round
 
 def populate_dataframe(calc:int,stage:int,df,year=2023):
@@ -89,23 +89,23 @@ def populate_dataframe(calc:int,stage:int,df,year=2023):
             constructor_info = entry["Constructors"][0]
 
             new_row = {
-                "Position": entry["position"],
-                "Points": entry["points"],
-                "Wins": entry["wins"],
-                "Driver": driver_info["code"],
-                "Constructor": constructor_info["name"],
-                "Season": season,
-                "Week":stage,
-                "Driver_Season": str(i) + driver_info['code']
+                "position": entry["position"],
+                "points": entry["points"],
+                "wins": entry["wins"],
+                "driver": driver_info["code"],
+                "constructor": constructor_info["name"],
+                "season": season,
+                "week":stage,
+                "driver_season": str(i) + driver_info['code']
             }
             new_row_df = pd.DataFrame(new_row, index=[0])
             df = pd.concat([df, new_row_df], ignore_index=True)
-    df['Position'] = pd.to_numeric(df['Position'])
-    df["Points"] = pd.to_numeric(df['Points'])
-    df["Wins"] = pd.to_numeric(df['Wins'])
-    df['Driver'] = df['Driver'].astype(str)
-    df['Constructor'] = df['Constructor'].astype(str)
-    df['Season'] = pd.to_numeric(df['Season'])
+    df['position'] = pd.to_numeric(df['position'])
+    df["points"] = pd.to_numeric(df['points'])
+    df["wins"] = pd.to_numeric(df['wins'])
+    df['driver'] = df['driver'].astype(str)
+    df['constructor'] = df['constructor'].astype(str)
+    df['season'] = pd.to_numeric(df['season'])
     return df
 
 
@@ -121,19 +121,19 @@ def end_of_season(calc:int,year=2023):
             constructor_info = entry["Constructors"][0]
 
             new_row = {
-                "Position_EOS": entry["position"],
-                "Points_EOS": entry["points"],
-                "Wins_EOS": entry["wins"],
-                "Driver": driver_info["code"],
-                "Season": i,
-                "Driver_Season": str(i) + driver_info['code']
+                "position_EOS": entry["position"],
+                "points_EOS": entry["points"],
+                "wins_EOS": entry["wins"],
+                "driver": driver_info["code"],
+                "season": i,
+                "driver_season": str(i) + driver_info['code']
             }
             new_row_df = pd.DataFrame(new_row, index=[0])
             df = pd.concat([df, new_row_df], ignore_index=True)
-    df['Position_EOS'] = pd.to_numeric(df['Position_EOS'])
-    df["Points_EOS"] = pd.to_numeric(df['Points_EOS'])
-    df["Wins_EOS"] = pd.to_numeric(df['Wins_EOS'])
-    df['Driver'] = df['Driver'].astype(str)
+    df['position_EOS'] = pd.to_numeric(df['Position_EOS'])
+    df["points_EOS"] = pd.to_numeric(df['Points_EOS'])
+    df["wins_EOS"] = pd.to_numeric(df['Wins_EOS'])
+    df['driver'] = df['Driver'].astype(str)
     return df
 
 
@@ -144,23 +144,22 @@ def main():
     num_years = st.sidebar.slider('Select number of years', min_value=1, max_value=20, value=10)
     temporada_actual, round = initialize()
     standings = populate_dataframe(num_years, stage=round, df=temporada_actual)
-    top_ten_per_season = standings[standings['Position'] <= 10]
     eos = end_of_season(num_years)
-    final_test = standings[standings['Season'] != 2023].merge(eos, how='left', on='Driver_Season')
-    X = final_test[['Position', 'Points', "Wins"]]
-    y = final_test[['Position_EOS', 'Points_EOS', 'Wins_EOS']]
+    final_test = standings[standings['season'] != 2023].merge(eos, how='left', on='driver_season')
+    X = final_test[['position', 'points', "wins"]]
+    y = final_test[['position_EOS', 'points_EOS', 'wins_EOS']]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(temporada_actual[['Position', 'Points', 'Wins']])
-    temporada_actual.assign(Pred_position = y_pred[:,0], Pred_Points=y_pred[:,1],Pred_Wins=y_pred[:,2])
-    hue = 'Driver'
-    style = 'Constructor'
+    temporada_actual.assign(pred_position = y_pred[:,0], pred_points=y_pred[:,1],pred_wins=y_pred[:,2])
+    hue = 'driver'
+    style = 'constructor'
     tab1, tab2 = st.tabs(['Predictions','Fastest Times'])
     with tab1:
         st.subheader('Current Points vs Projected Points')
         fig, ax = plt.subplots(2,1)
-        scatter1 = sns.scatterplot(temporada_actual, x='Points', y='Pred_Points', hue=hue, style=style, s=100,ax=ax[0])
+        scatter1 = sns.scatterplot(temporada_actual, x='points', y='pred_points', hue=hue, style=style, s=100,ax=ax[0])
         ax_legend = ax[1].axis('off')
         handles, labels = scatter1.get_legend_handles_labels()
         legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
@@ -169,7 +168,7 @@ def main():
         st.pyplot(fig,clear_figure=True)
         fig, ax = plt.subplots(2,1)
         st.subheader('Current Position vs Projected Position')
-        scatter2 = sns.scatterplot(temporada_actual, x='Position', y='Pred_Position', hue=hue, style=style, s=100,ax=ax[0])
+        scatter2 = sns.scatterplot(temporada_actual, x='position', y='pred_position', hue=hue, style=style, s=100,ax=ax[0])
         ax_legend = ax[1].axis('off')
         legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
                             loc='lower center', ncol=4)
@@ -177,14 +176,14 @@ def main():
         st.pyplot(fig)
         st.subheader('Current Wins vs Projected Wins')
         fig, ax = plt.subplots(2,1)
-        scatter3 = sns.scatterplot(temporada_actual, x='Wins', y='Pred_Wins', hue=hue, style=style, s=100,ax=ax[0])
+        scatter3 = sns.scatterplot(temporada_actual, x='wins', y='pred_wins', hue=hue, style=style, s=100,ax=ax[0])
         ax_legend = ax[1].axis('off')
         legend = fig.legend(handles, labels, title='Drivers(Color) and Constructors(Shape)',
                             loc='lower center', ncol=4)
         scatter3.legend_.remove()
         st.pyplot(fig)
         st.write(" This prediction model has an R-squared score of: ", regr.score(X_test, y_test))
-        driver_wins = standings.groupby('Driver')['Wins'].sum().sort_values(ascending=False)
+        driver_wins = standings.groupby('driver')['wins'].sum().sort_values(ascending=False)
         st.subheader(f'Driver Wins in the last {num_years} years')
         st.bar_chart(driver_wins)
 
@@ -193,31 +192,31 @@ def main():
         circuit = circuit_names()
         col1, col2 = st.columns(2)
         circuits = st.sidebar.selectbox('Select circuit', circuit)
-        df = create_dataframe(df, circuits)
+        df = fastest_laps(df, circuits)
         with col1:
             st.title('Fastest laps at {}'.format(circuits))
             st.table(df)
-            current_year_avg_speed = df['Avg_Speed'].iloc[-1]
-            previous_year_avg_speed = df['Avg_Speed'].iloc[-2]
+            current_year_avg_speed = df['avg_speed'].iloc[-1]
+            previous_year_avg_speed = df['avg_speed'].iloc[-2]
             avg_speed_change = current_year_avg_speed - previous_year_avg_speed
 
             # Add a new chart that displays the fastest laps
-            df['Time_in_seconds'] = df['Time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
+            df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
             fig, ax = plt.subplots()
-            sns.lineplot(data=df, x='Season', y='Time_in_seconds')
+            sns.lineplot(data=df, x='season', y='time_in_seconds')
             ax.set_xlabel('Year')
             ax.set_ylabel('Fastest Lap Time (sec)')
             plt.xticks(rotation=45, ha='right')
             st.pyplot(fig)
-            difference_in_seconds = df['Time_in_seconds'].iloc[-1] - df['Time_in_seconds'].iloc[-2]
+            difference_in_seconds = df['time_in_seconds'].iloc[-1] - df['time_in_seconds'].iloc[-2]
             fig, ax = plt.subplots()
-            sns.lineplot(data=df, x='Season', y='Avg_Speed')
+            sns.lineplot(data=df, x='season', y='avg_speed')
             ax.set_xlabel('Year')
             ax.set_ylabel('Average Speed (mph)')
             plt.xticks(rotation=45, ha='right')
             st.pyplot(fig)
         with col2:
-            st.metric('Fastest Lap', df['Time'].iloc[-1],
+            st.metric('Fastest Lap', df['time'].iloc[-1],
                   delta=f"{difference_in_seconds:.2f} seconds")
             st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
 
