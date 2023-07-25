@@ -192,11 +192,12 @@ def main():
         circuit = circuit_names()
         col1, col2,col3 = st.columns(3)
         circuits = st.sidebar.selectbox('Select circuit', circuit['race_name'])
-        df = fastest_laps(df, circuits['race_id'])
+        selection = circuit[circuit['race_name'] == circuits]
+        df = fastest_laps(df, selection.race_id)
         with col1:
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
 
-            st.title('Fastest laps at {}'.format(circuits))
+            st.title('Fastest laps at {}'.format(circuits.title))
             st.table(df)
             current_year_avg_speed = df['avg_speed'].iloc[-1]
             previous_year_avg_speed = df['avg_speed'].iloc[-2]
