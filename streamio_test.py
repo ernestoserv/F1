@@ -193,7 +193,7 @@ def main():
         col1, col2,col3 = st.columns(3)
         circuits = st.sidebar.selectbox('Select circuit', circuit['race_name'])
         selection = circuit[circuit['race_name'] == circuits]
-        df = fastest_laps(df, selection.race_id)
+        df = fastest_laps(df, selection['race_id'])
         with col1:
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
 
