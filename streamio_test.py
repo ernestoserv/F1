@@ -40,9 +40,18 @@ def circuit_names():
         url1 = f'http://ergast.com/api/f1/current/{i}/results.json'
         response = requests.get(url=url1)
         temp = response.json()
-        race_id = temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['circuitId']
-        circuits.append(race_id)
-    return circuits
+        latest_race = {
+            'race_id': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['circuitId'],
+            'race_name': temp["MRData"]["RaceTable"]['Races'][0]['raceName'],
+            'link': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['url'],
+            'lat': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['lat'],
+            'lon': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['long'],
+            'city':temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['locality'],
+            'country':temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['country']
+        }
+        circuits.append(latest_race)
+    df_1 = pd.DataFrame(circuits)
+    return df_1
 
 def initialize():
     url = "http://ergast.com/api/f1/current/driverStandings.json"
@@ -137,9 +146,6 @@ def end_of_season(calc:int,year=2023):
     df["wins_EOS"] = pd.to_numeric(df['wins_EOS'])
     df['driver'] = df['driver'].astype(str)
     return df
-
-
-
 def main():
     st.title('F1 Analytics')
     st.sidebar.title('Settings')
@@ -184,9 +190,9 @@ def main():
     with tab2:
         df = pd.DataFrame()
         circuit = circuit_names()
-        col1, col2 = st.columns(2)
-        circuits = st.sidebar.selectbox('Select circuit', circuit)
-        df = fastest_laps(df, circuits)
+        col1, col2,col3 = st.columns(3)
+        circuits = st.sidebar.selectbox('Select circuit', circuit['race_name'])
+        df = fastest_laps(df, circuits['race_id'])
         with col1:
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
 
@@ -205,6 +211,15 @@ def main():
             st.metric('Fastest Lap', df['time'].iloc[-1],
                       delta=f"{difference_in_seconds:.2f} seconds")
             st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
+        with col3:
+            fig = px.choropleth(data_frame=circuits,
+                                lat=circuits.lat,
+                                lon=circuits.lon,
+                                locations=circuits.country,  # nombre de la columna del Dataframe
+                                title='2023 races'
+                                )
+            fig.update_geos(showcountries=True, showcoastlines=True, showland=True, fitbounds="locations")
+            fig.show()
 
 
 if __name__ == '__main__':
