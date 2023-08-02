@@ -1,9 +1,6 @@
 import requests
 import pandas as pd
 import streamlit as st
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.graph_objs as go
 import plotly.express as px
 from datetime import datetime
 from sklearn.model_selection import train_test_split
@@ -12,9 +9,12 @@ from sklearn.linear_model import LinearRegression
 def fastest_laps(df, circuit):
     cols = []
     for i in range(2008, 2024):
-        url = f'http://ergast.com/api/f1/{i}/circuits/{circuit}/fastest/1/results.json'
-        response = requests.get(url=url)
-        temp = response.json()
+        try:
+            url = f'http://ergast.com/api/f1/{i}/circuits/{circuit}/fastest/1/results.json'
+            response = requests.get(url=url)
+            temp = response.json()
+        except:
+            print(response.status_code)
         if temp["MRData"]["RaceTable"]['Races'] != []:
             latest_race = {
                 "season": temp["MRData"]["RaceTable"]['season'],
@@ -43,7 +43,7 @@ def circuit_names():
         latest_race = {
             'race_id': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['circuitId'],
             'race_name': temp["MRData"]["RaceTable"]['Races'][0]['raceName'],
-            'link': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['url'],
+            'winner': temp["MRData"]["RaceTable"]['Races'][0]['Results'][0]['Driver']['givenName'] + temp["MRData"]["RaceTable"]['Races'][0]['Results'][0]['Driver']['familyName'],
             'lat': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['lat'],
             'lon': temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['long'],
             'city':temp["MRData"]["RaceTable"]['Races'][0]['Circuit']['Location']['locality'],
@@ -149,14 +149,14 @@ def end_of_season(calc:int,year=2023):
 def main():
     st.title('F1 Analytics')
     st.sidebar.title('Settings')
-    num_years = st.sidebar.slider('Select number of years', min_value=1, max_value=20, value=10)
+    num_years = st.sidebar.slider('Select number of years', min_value=1, max_value=15, value=10)
     temporada_actual, round = initialize()
-    standings = populate_dataframe(num_years, stage=round, df=temporada_actual)
-    eos = end_of_season(num_years)
+    standings = populate_dataframe(15, stage=round, df=temporada_actual)
+    eos = end_of_season(15)
     final_test = standings[standings['season'] != 2023].merge(eos, how='left', on='driver_season')
     X = final_test[['position', 'points', "wins"]]
     y = final_test[['position_EOS', 'points_EOS', 'wins_EOS']]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
     regr = LinearRegression()
     regr.fit(X_train, y_train)
     y_pred = regr.predict(temporada_actual[['position', 'points', 'wins']])
@@ -164,7 +164,7 @@ def main():
                                                pred_wins=y_pred[:, 2])
     hue = 'driver'
     style = 'constructor'
-    tab1, tab2 = st.tabs(['Predictions', 'Fastest Times'])
+    tab1, tab2,tab3 = st.tabs(['Predictions', 'Fastest Times','Circuit Info'])
 
     with tab1:
         st.subheader('Current Points vs Projected Points')
@@ -190,14 +190,15 @@ def main():
     with tab2:
         df = pd.DataFrame()
         circuit = circuit_names()
-        col1, col2,col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         circuits = st.sidebar.selectbox('Select circuit', circuit['race_name'])
         selection = circuit[circuit['race_name'] == circuits]
-        df = fastest_laps(df, selection['race_id'])
+        print(selection)
+        df = fastest_laps(df, str(selection.iloc[0,0]))
         with col1:
             df['time_in_seconds'] = df['time'].apply(lambda x: 60 * int(x.split(':')[0]) + float(x.split(':')[1]))
 
-            st.title('Fastest laps at {}'.format(circuits.title))
+            st.title('Fastest laps at {}'.format(circuits.title()))
             st.table(df)
             current_year_avg_speed = df['avg_speed'].iloc[-1]
             previous_year_avg_speed = df['avg_speed'].iloc[-2]
@@ -211,17 +212,24 @@ def main():
         with col2:
             st.metric('Fastest Lap', df['time'].iloc[-1],
                       delta=f"{difference_in_seconds:.2f} seconds")
-            st.metric('Average speed', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
-        with col3:
-            fig = px.choropleth(data_frame=circuits,
-                                lat=circuits.lat,
-                                lon=circuits.lon,
-                                locations=circuits.country,  # nombre de la columna del Dataframe
-                                title='2023 races'
-                                )
-            fig.update_geos(showcountries=True, showcoastlines=True, showland=True, fitbounds="locations")
-            fig.show()
+            st.metric('Average speed (km/h)', f"{current_year_avg_speed:.2f}", delta=f"{avg_speed_change:.2f}")
+    with tab3:
+        fig = px.scatter_geo(circuit,
+                             lat='lat',
+                             lon='lon',
+                             color='winner',
+                             hover_name='race_name',
+                             hover_data='winner',
+                             projection='natural earth')
+        fig.update_layout(
+            title_text='Racing Events Around the World',  # add a title
+            geo=dict(
+                showframe=False,  # remove frame around map  # remove coastlines
+                projection_type='equirectangular'  # change projection type
+            )
+        )
 
+        st.plotly_chart(fig)
 
 if __name__ == '__main__':
     main()
