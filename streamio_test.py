@@ -54,7 +54,7 @@ def circuit_names():
     return df_1
 
 def initialize():
-    url = "http://ergast.com/api/f1/current/driverStandings.json"
+    url = "http://ergast.com/api/f1/2023/driverStandings.json"
     response = requests.get(url=url)
     temp = response.json()
     season = temp['MRData']['StandingsTable']['StandingsLists'][0]['season']
