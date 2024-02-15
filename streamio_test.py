@@ -87,7 +87,7 @@ def initialize():
     df['season'] = pd.to_numeric(df['season'])
     return df,round
 
-def populate_dataframe(calc:int,stage:int,df,year=2023):
+def populate_dataframe(calc:int,stage:int,df,year=2024):
     for i in range((year-calc),(year)):
         url = 'http://ergast.com/api/f1/{}/{}/driverStandings.json'.format(i,stage)
         response = requests.get(url=url)
