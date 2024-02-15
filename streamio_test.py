@@ -151,6 +151,7 @@ def main():
     st.sidebar.title('Settings')
     num_years = st.sidebar.slider('Select number of years', min_value=1, max_value=15, value=10)
     temporada_actual, round = initialize()
+    round = 18
     standings = populate_dataframe(15, stage=round, df=temporada_actual)
     eos = end_of_season(15)
     final_test = standings[standings['season'] != 2023].merge(eos, how='left', on='driver_season')
