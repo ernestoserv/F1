@@ -75,7 +75,7 @@ standings['Driver'] = standings['Driver'].astype(str)
 standings['Constructor'] = standings['Constructor'].astype(str)
 standings['Season'] = pd.to_numeric(standings['Season'])
 top_ten_per_season = standings[standings['Position'] <= 10]
-def end_of_season(calc:int,year=2023):
+def end_of_season(calc:int,year=2024):
     df = pd.DataFrame()
     for i in range((year-calc),(year)):
         url = 'http://ergast.com/api/f1/{}/driverStandings.json'.format(i)
